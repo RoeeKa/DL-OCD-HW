@@ -1,2 +1,4 @@
 .idea
 data
+base_models
+checkpoints
