@@ -69,6 +69,10 @@ def train(args, config, optimizer, optimizer_scale,
         optimizer_scale.zero_grad()
         for idx, batch in enumerate(train_loader):
             optimizer_scale.zero_grad()
+
+            # Roee muxnet only
+            if args.datatype == 'muxnet':
+                batch['input'] = F.interpolate(batch['input'], size=224, mode='bicubic', align_corners=False)
             batch['input'] = batch['input'].to(device)
             batch['output'] = batch['output'].to(device)
             # Overfitting encapsulation #
