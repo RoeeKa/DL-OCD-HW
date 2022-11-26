@@ -26,7 +26,7 @@
         "scale":{
             "ch": 128,
             "in_dim": 100,
-            "out_dim": 120
+            "out_dim": 1280
         }
 
     },
