@@ -240,21 +240,21 @@ def wrapper_dataset(config, args, device):
 
         print('Preprocessing train data')
         for idx, (inputs, targets) in enumerate(train_loader):
-            inputs = F.interpolate(inputs, size=224, mode='bicubic', align_corners=False)
+            # inputs = F.interpolate(inputs, size=224, mode='bicubic', align_corners=False)
             batch = {'input':inputs,'output':targets}
             train_ds.append(deepcopy(batch))
 
-            if (idx + 1) % 100 == 0:
+            if (idx + 1) % 1000 == 0:
                 print(f'Finished {idx + 1} batches')
                 break
 
         print('Preprocessing test data')
         for idx, (inputs, targets) in enumerate(test_loader):
-            inputs = F.interpolate(inputs, size=224, mode='bicubic', align_corners=False)
+            # inputs = F.interpolate(inputs, size=224, mode='bicubic', align_corners=False)
             batch = {'input':inputs,'output':targets}
             test_ds.append(deepcopy(batch))
 
-            if (idx + 1) % 100 == 0:
+            if (idx + 1) % 1000 == 0:
                 print(f'Finished {idx + 1} batches')
                 break
         model = muxnet_m(pretrained=True, num_classes=10)
