@@ -25,7 +25,7 @@
         "dim_output": 100,
         "scale":{
             "ch": 128,
-            "in_dim": 84,
+            "in_dim": 100,
             "out_dim": 120
         }
 
