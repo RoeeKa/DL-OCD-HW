@@ -127,8 +127,8 @@ def train(args, config, optimizer, optimizer_scale,
             optimizer_scale.step()
             optimizer_scale.zero_grad()
 
-        if idx % 100 == 0:
-            print(f'Finished batch {idx + 1}')
+            if idx % 100 == 0:
+                print(f'Finished batch {idx + 1}')
 
         if ((epoch + 1) % n_checkpoint == 0) or (epoch + 1 == epochs):
             print(f'epoch {epoch+1} save checkpoints: model_checkpoint_epoch{epoch}_step{step}_data{args.datatype}, scale_model_checkpoint_epoch{epoch}_loss{step}_data{args.datatype}')
