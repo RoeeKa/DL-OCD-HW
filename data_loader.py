@@ -234,9 +234,9 @@ def wrapper_dataset(config, args, device):
         valid_data = torchvision.datasets.CIFAR10(
             root='data', train=False, download=True, transform=valid_transform)
         train_loader = torch.utils.data.DataLoader(
-            train_data, batch_size=2, shuffle=True, pin_memory=True, num_workers=2)
+            train_data, batch_size=1, shuffle=True, pin_memory=True, num_workers=2)
         test_loader = torch.utils.data.DataLoader(
-            valid_data, batch_size=2, shuffle=False, pin_memory=True, num_workers=2)
+            valid_data, batch_size=1, shuffle=False, pin_memory=True, num_workers=2)
 
         print('Preprocessing train data')
         for idx, (inputs, targets) in enumerate(train_loader):
