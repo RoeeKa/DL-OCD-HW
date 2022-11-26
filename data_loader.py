@@ -242,11 +242,16 @@ def wrapper_dataset(config, args, device):
             inputs = F.interpolate(inputs, size=224, mode='bicubic', align_corners=False)
             batch = {'input':inputs,'output':targets}
             train_ds.append(deepcopy(batch))
+
+            if idx == 100:
+                break
         for idx, (inputs, targets) in enumerate(test_loader):
             inputs = F.interpolate(inputs, size=224, mode='bicubic', align_corners=False)
             batch = {'input':inputs,'output':targets}
             test_ds.append(deepcopy(batch))
 
+            if idx == 100:
+                break
         model = muxnet_m(pretrained=True, num_classes=10)
     else:
         raise Exception('Bla')

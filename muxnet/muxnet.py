@@ -918,8 +918,10 @@ def muxnet_m(pretrained=False, num_classes=1000, in_chans=3, **kwargs):
         num_classes=num_classes, in_chans=in_chans, **kwargs)
     model.default_cfg = default_cfg
     if pretrained:
+        print('Loading muxnet')
         checkpoint_path = 'base_models/cifar10.init'
         load_checkpoint(model, checkpoint_path, use_ema=True)
+        print('Muxnet loaded')
     return model
 
 
