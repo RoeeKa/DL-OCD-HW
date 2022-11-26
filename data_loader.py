@@ -15,6 +15,35 @@ from copy import deepcopy
 from muxnet.muxnet import muxnet_m
 from hcgnet.HCGNet_CIFAR import HCGNet_A1
 
+
+def _data_transforms(args):
+    norm_mean = [0.49139968, 0.48215827, 0.44653124]
+    norm_std = [0.24703233, 0.24348505, 0.26158768]
+
+    train_transform = transforms.Compose([
+        transforms.RandomCrop(32, padding=4),
+        # transforms.Resize(224, interpolation=3),  # BICUBIC interpolation
+        transforms.RandomHorizontalFlip(),
+    ])
+
+    # if args.autoaugment:
+    #     train_transform.transforms.append(CIFAR10Policy())
+
+    train_transform.transforms.append(transforms.ToTensor())
+
+    # if args.cutout:
+    #     train_transform.transforms.append(Cutout(args.cutout_length))
+
+    train_transform.transforms.append(transforms.Normalize(norm_mean, norm_std))
+
+    valid_transform = transforms.Compose([
+        transforms.Resize(224, interpolation=3),  # BICUBIC interpolation
+        transforms.ToTensor(),
+        transforms.Normalize(norm_mean, norm_std),
+    ])
+    return train_transform, valid_transform
+
+
 def wrapper_dataset(config, args, device):
     if args.datatype == 'tinynerf':
         
@@ -95,7 +124,7 @@ def wrapper_dataset(config, args, device):
             train_x = train_x[:,0,:,:].unsqueeze(1)
             batch = {'input':train_x,'output':train_label}
             test_ds.append(deepcopy(batch))
-    elif args.datatype == 'muxnet':
+    elif args.datatype == 'muxnet-cifar100':
         class Cutout(object):
             def __init__(self, length):
                 self.length = length
@@ -117,33 +146,6 @@ def wrapper_dataset(config, args, device):
                 img *= mask
                 return img
 
-        def _data_transforms(args):
-            norm_mean = [0.49139968, 0.48215827, 0.44653124]
-            norm_std = [0.24703233, 0.24348505, 0.26158768]
-
-            train_transform = transforms.Compose([
-                transforms.RandomCrop(32, padding=4),
-                # transforms.Resize(224, interpolation=3),  # BICUBIC interpolation
-                transforms.RandomHorizontalFlip(),
-            ])
-
-            # if args.autoaugment:
-            #     train_transform.transforms.append(CIFAR10Policy())
-
-            train_transform.transforms.append(transforms.ToTensor())
-
-            # if args.cutout:
-            #     train_transform.transforms.append(Cutout(args.cutout_length))
-
-            train_transform.transforms.append(transforms.Normalize(norm_mean, norm_std))
-
-            valid_transform = transforms.Compose([
-                transforms.Resize(224, interpolation=3),  # BICUBIC interpolation
-                transforms.ToTensor(),
-                transforms.Normalize(norm_mean, norm_std),
-            ])
-            return train_transform, valid_transform
-
         train_ds, test_ds = [],[]
         train_transform, valid_transform = _data_transforms(args)
         train_data = torchvision.datasets.CIFAR100(
@@ -160,16 +162,10 @@ def wrapper_dataset(config, args, device):
             inputs = F.interpolate(inputs, size=224, mode='bicubic', align_corners=False)
             batch = {'input':inputs,'output':targets}
             train_ds.append(deepcopy(batch))
-
-            if idx == 100:
-                break
         for idx, (inputs, targets) in enumerate(test_loader):
             inputs = F.interpolate(inputs, size=224, mode='bicubic', align_corners=False)
             batch = {'input':inputs,'output':targets}
             test_ds.append(deepcopy(batch))
-
-            if idx == 100:
-                break
         model = muxnet_m(pretrained=False, num_classes=100)
     elif args.datatype == 'hcgnet':
         train_ds, test_ds = [], []
@@ -229,6 +225,29 @@ def wrapper_dataset(config, args, device):
             test_ds.append(deepcopy(batch))
 
         model = Lenet5.NetOriginal(ch_in=3)
+    elif args.datatype == 'muxnet-cifar10':
+        train_transform, valid_transform = _data_transforms(args)
+        train_ds, test_ds = [],[]
+
+        train_data = torchvision.datasets.CIFAR10(
+            root=args.data, train=True, download=True, transform=train_transform)
+        valid_data = torchvision.datasets.CIFAR10(
+            root=args.data, train=False, download=True, transform=valid_transform)
+        train_loader = torch.utils.data.DataLoader(
+            train_data, batch_size=1, shuffle=True, pin_memory=True, num_workers=2)
+        test_loader = torch.utils.data.DataLoader(
+            valid_data, batch_size=1, shuffle=False, pin_memory=True, num_workers=2)
+
+        for idx, (inputs, targets) in enumerate(train_loader):
+            inputs = F.interpolate(inputs, size=224, mode='bicubic', align_corners=False)
+            batch = {'input':inputs,'output':targets}
+            train_ds.append(deepcopy(batch))
+        for idx, (inputs, targets) in enumerate(test_loader):
+            inputs = F.interpolate(inputs, size=224, mode='bicubic', align_corners=False)
+            batch = {'input':inputs,'output':targets}
+            test_ds.append(deepcopy(batch))
+
+        model = muxnet_m(pretrained=True, num_classes=10)
     else:
         raise Exception('Bla')
     return train_ds,test_ds,model
