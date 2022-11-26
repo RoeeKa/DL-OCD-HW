@@ -11,7 +11,7 @@
     },
     "checkpoint": {
         "checkpoint_path": "",
-        "n_checkpoint": 100
+        "n_checkpoint": 1
     },
     "diffusion": {
         "dropout": 0.4,
