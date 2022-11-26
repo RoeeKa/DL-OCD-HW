@@ -238,20 +238,23 @@ def wrapper_dataset(config, args, device):
         test_loader = torch.utils.data.DataLoader(
             valid_data, batch_size=1, shuffle=False, pin_memory=True, num_workers=2)
 
+        print('Preprocessing train data')
         for idx, (inputs, targets) in enumerate(train_loader):
             inputs = F.interpolate(inputs, size=224, mode='bicubic', align_corners=False)
             batch = {'input':inputs,'output':targets}
             train_ds.append(deepcopy(batch))
 
-            if idx == 100:
-                break
+            if (idx + 1) % 100 == 0:
+                print(f'Finished {idx + 1} batches')
+
+        print('Preprocessing test data')
         for idx, (inputs, targets) in enumerate(test_loader):
             inputs = F.interpolate(inputs, size=224, mode='bicubic', align_corners=False)
             batch = {'input':inputs,'output':targets}
             test_ds.append(deepcopy(batch))
 
-            if idx == 100:
-                break
+            if (idx + 1) % 100 == 0:
+                print(f'Finished {idx + 1} batches')
         model = muxnet_m(pretrained=True, num_classes=10)
     else:
         raise Exception('Bla')
