@@ -13,9 +13,9 @@ class NetOriginal(nn.Module):
         self.pool2 = nn.MaxPool2d(2, stride=2)
         self.conv3 = nn.Conv2d(16, 120, 5)
         self.ReLU3 = nn.ReLU()
-        self.fc1 = nn.Linear(120, 84)
+        self.fc1 = nn.Linear(480, 84)
         self.ReLU4 = nn.ReLU()
-        self.fc2 = nn.Linear(84, 10)
+        self.fc2 = nn.Linear(84, 100)
 
     def forward(self, input):
         latent = []

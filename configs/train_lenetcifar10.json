@@ -6,8 +6,8 @@
         "loss": "ce"
     },
     "model": {
-        "weight_name": "classifier",
-        "name":"hcgnet"
+        "weight_name": "fc1",
+        "name":"cifar10"
     },
     "checkpoint": {
         "checkpoint_path": "",
@@ -17,16 +17,16 @@
         "dropout": 0.4,
         "diffusion_num_steps": 1000,
         "diffusion_num_steps_eval": 10,
-        "nch": 32,
+        "nch": 128,
         "out_ch": 1,
-        "ch_mult": [1, 1],
-        "dim_in": 100,
-        "dim_lat_out": 414,
-        "dim_output": 100,
+        "ch_mult": [1, 1, 2, 2, 4, 4],
+        "dim_in": 84,
+        "dim_lat_out": 480,
+        "dim_output": 10,
         "scale":{
             "ch": 128,
             "in_dim": 84,
-            "out_dim": 120
+            "out_dim": 480
         }
 
     },
@@ -36,3 +36,4 @@
     }
 
 }
+

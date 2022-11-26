@@ -188,10 +188,10 @@ def wrapper_dataset(config, args, device):
                                                     transforms.Normalize([0.5071, 0.4867, 0.4408],
                                                                          [0.2675, 0.2565, 0.2761]),
                                                 ]))
-        trainloader = torch.utils.data.DataLoader(trainset, batch_size=2, shuffle=True,
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size=1, shuffle=True,
                                                   pin_memory=(torch.cuda.is_available()))
 
-        testloader = torch.utils.data.DataLoader(testset, batch_size=2, shuffle=False,
+        testloader = torch.utils.data.DataLoader(testset, batch_size=1, shuffle=False,
                                                  pin_memory=(torch.cuda.is_available()))
 
         for batch_idx, (inputs, targets) in enumerate(trainloader):
@@ -202,6 +202,33 @@ def wrapper_dataset(config, args, device):
             test_ds.append(deepcopy(batch))
 
         model = HCGNet_A1(num_classes=100)
+    elif args.datatype == 'lenet-cifar':
+        train_ds, test_ds = [], []
+
+        transform = transforms.Compose(
+            [transforms.ToTensor(),
+             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+
+        batch_size = 1
+
+        trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
+                                                download=True, transform=transform)
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
+                                                  shuffle=True, num_workers=2)
+
+        testset = torchvision.datasets.CIFAR10(root='./data', train=False,
+                                               download=True, transform=transform)
+        testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
+                                                 shuffle=False, num_workers=2)
+
+        for batch_idx, (inputs, targets) in enumerate(trainloader):
+            batch = {'input':inputs,'output':targets}
+            train_ds.append(deepcopy(batch))
+        for batch_idx, (inputs, targets) in enumerate(testloader):
+            batch = {'input':inputs,'output':targets}
+            test_ds.append(deepcopy(batch))
+
+        model = Lenet5.NetOriginal(ch_in=3)
     else:
         raise Exception('Bla')
     return train_ds,test_ds,model
