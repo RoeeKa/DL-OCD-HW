@@ -246,7 +246,6 @@ def wrapper_dataset(config, args, device):
 
             if (idx + 1) % 1000 == 0:
                 print(f'Finished {idx + 1} batches')
-                break
 
         print('Preprocessing test data')
         for idx, (inputs, targets) in enumerate(test_loader):
@@ -256,7 +255,6 @@ def wrapper_dataset(config, args, device):
 
             if (idx + 1) % 1000 == 0:
                 print(f'Finished {idx + 1} batches')
-                break
         model = muxnet_m(pretrained=True, num_classes=10)
     else:
         raise Exception('Bla')
