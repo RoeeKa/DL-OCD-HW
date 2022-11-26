@@ -176,4 +176,4 @@ for idx, batch in enumerate(test_loader):
     ldiff += ldiffusion
     lopt += loptimal
     lbaseline += lbase
-    print(f"\rBaseline loss {lbaseline/(idx+1)}, Overfitted loss {lopt/(idx+1)}, Diffusion loss {ldiff/(idx+1)}",end='')
+    print(f"\rBaseline loss {lbaseline/(idx+1)}, Overfitted loss {lopt/(idx+1)}, Diffusion loss {ldiff/(idx+1)}, batch {idx + 1}",end='')
