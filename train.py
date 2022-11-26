@@ -127,7 +127,7 @@ def train(args, config, optimizer, optimizer_scale,
             optimizer_scale.step()
             optimizer_scale.zero_grad()
 
-            if idx % 100 == 0:
+            if (idx + 1) % 10 == 0:
                 print(f'Finished batch {idx + 1}')
 
         if ((epoch + 1) % n_checkpoint == 0) or (epoch + 1 == epochs):
