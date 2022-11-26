@@ -86,7 +86,7 @@ if args.resume_training:
     diffusion_model.load_state_dict(torch.load(args.diffusion_model_path))
     scale_model.load_state_dict(torch.load(args.scale_model_path))
 train_loader, test_loader, model = wrapper_dataset(config, args, device)
-model.load_state_dict(torch.load(module_path))
+# model.load_state_dict(torch.load(module_path))
 model = model.to(device)
 if config.training.loss == 'mse':
     opt_error_loss = torch.nn.MSELoss()
@@ -99,6 +99,12 @@ optimizer = torch.optim.Adam(diffusion_model.parameters(), lr=lr)
 optimizer_scale= torch.optim.Adam(scale_model.parameters(), lr=5*lr)
 ema_helper = EMAHelper(mu=0.9999)
 ema_helper.register(diffusion_model)
+
+# for name, _ in model.named_parameters():
+#     dmodel_original_weight = deepcopy(model.get_parameter(name))
+#     mat_shape = dmodel_original_weight.shape
+#     if len(mat_shape) == 2:
+#         print(name)
 
 ################################################# Check if weight is OK ##########################
 weight_name = config.model.weight_name

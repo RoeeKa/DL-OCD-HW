@@ -5,6 +5,7 @@ from collections import OrderedDict
 import numpy as np
 from hcgnet.regularization.dropblock import DropBlock2D, SGDRScheduler
 import math
+from copy import deepcopy
 
 
 class BasicConv(nn.Module):
@@ -218,8 +219,10 @@ class HCGNet(nn.Module):
         features = self.features(x)
         features = F.adaptive_avg_pool2d(F.relu(features),(1, 1))
         out = features.view(features.size(0), -1)
+        latent_in = deepcopy(out.detach())
         out = self.classifier(out)
-        return out
+        latent = deepcopy(out.detach())
+        return out, (latent, latent_in)
 
 
 def HCGNet_A1(num_classes=100):

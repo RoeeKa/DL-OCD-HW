@@ -13,6 +13,7 @@ from torchvision.transforms import ToTensor
 from copy import deepcopy
 
 from muxnet.muxnet import muxnet_m
+from hcgnet.HCGNet_CIFAR import HCGNet_A1
 
 def wrapper_dataset(config, args, device):
     if args.datatype == 'tinynerf':
@@ -170,6 +171,37 @@ def wrapper_dataset(config, args, device):
             if idx == 100:
                 break
         model = muxnet_m(pretrained=False, num_classes=100)
+    elif args.datatype == 'hcgnet':
+        train_ds, test_ds = [], []
+        trainset = torchvision.datasets.CIFAR100(root='data', train=True, download=True,
+                                                 transform=transforms.Compose([
+                                                     transforms.RandomCrop(32, padding=4),
+                                                     transforms.RandomHorizontalFlip(),
+                                                     transforms.ToTensor(),
+                                                     transforms.Normalize([0.5071, 0.4867, 0.4408],
+                                                                          [0.2675, 0.2565, 0.2761])
+                                                 ]))
+
+        testset = torchvision.datasets.CIFAR100(root='data', train=False, download=True,
+                                                transform=transforms.Compose([
+                                                    transforms.ToTensor(),
+                                                    transforms.Normalize([0.5071, 0.4867, 0.4408],
+                                                                         [0.2675, 0.2565, 0.2761]),
+                                                ]))
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size=2, shuffle=True,
+                                                  pin_memory=(torch.cuda.is_available()))
+
+        testloader = torch.utils.data.DataLoader(testset, batch_size=2, shuffle=False,
+                                                 pin_memory=(torch.cuda.is_available()))
+
+        for batch_idx, (inputs, targets) in enumerate(trainloader):
+            batch = {'input':inputs,'output':targets}
+            train_ds.append(deepcopy(batch))
+        for batch_idx, (inputs, targets) in enumerate(testloader):
+            batch = {'input':inputs,'output':targets}
+            test_ds.append(deepcopy(batch))
+
+        model = HCGNet_A1(num_classes=100)
     else:
         raise Exception('Bla')
     return train_ds,test_ds,model
