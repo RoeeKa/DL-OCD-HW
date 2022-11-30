@@ -229,7 +229,7 @@ def wrapper_dataset(config, args, device):
         train_transform, valid_transform = _data_transforms(args)
         train_ds, test_ds = [],[]
 
-        train_batch_size, test_batch_size = 2, 2
+        train_batch_size, test_batch_size = 1, 1
 
         train_data = torchvision.datasets.CIFAR10(
             root='data', train=True, download=True, transform=train_transform)
@@ -242,10 +242,6 @@ def wrapper_dataset(config, args, device):
 
         print('Preprocessing train data')
         for idx, (inputs, targets) in enumerate(train_loader):
-            if len(targets) != train_batch_size:
-                print('Skipped one train batch')
-                continue
-
             # inputs = F.interpolate(inputs, size=224, mode='bicubic', align_corners=False)
             batch = {'input':inputs,'output':targets}
             train_ds.append(deepcopy(batch))
@@ -255,10 +251,6 @@ def wrapper_dataset(config, args, device):
 
         print('Preprocessing test data')
         for idx, (inputs, targets) in enumerate(test_loader):
-            if len(targets) != test_batch_size:
-                print('Skipped one test batch')
-                continue
-
             # inputs = F.interpolate(inputs, size=224, mode='bicubic', align_corners=False)
             batch = {'input':inputs,'output':targets}
             test_ds.append(deepcopy(batch))
