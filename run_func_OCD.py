@@ -83,6 +83,7 @@ diffusion_model = Model(config=config).cuda()
 loss_fn = torch.nn.MSELoss()
 scale_model = Model_Scale(config=config).cuda()
 if args.resume_training:
+    print('Resuming training')
     diffusion_model.load_state_dict(torch.load(args.diffusion_model_path))
     scale_model.load_state_dict(torch.load(args.scale_model_path))
 train_loader, test_loader, model = wrapper_dataset(config, args, device)
