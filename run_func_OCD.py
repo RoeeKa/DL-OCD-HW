@@ -145,6 +145,7 @@ else:
 ########################################### Test Phase ##########################################
 #################################################################################################
 
+model.eval()
 total_items = 0
 correct_items = 0
 
@@ -181,6 +182,7 @@ for idx, batch in enumerate(test_loader):
     lopt += loptimal
     lbaseline += lbase
 
+    predicted_labels = torch.argmax(predicted_labels, 1)
     correct_items += predicted_labels.eq(batch['output']).sum().item()
     total_items += batch['output'].size(0)
 
