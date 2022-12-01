@@ -64,6 +64,9 @@ def train(args, config, optimizer, optimizer_scale,
             hs.append(deepcopy(hfirst))
             outs.append(deepcopy(outin.detach().cpu()))
 
+            if (idx + 1) % 10000 == 0:
+                print(f'Finished {idx + 1} batches')
+
         print('precomputation finished')
     print('Start Training')
     for epoch in range(epochs):
