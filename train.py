@@ -43,6 +43,11 @@ def train(args, config, optimizer, optimizer_scale,
         ws,hs,outs = [],[],[]
         for idx, batch in enumerate(train_loader):
             optimizer_scale.zero_grad()
+
+            if args.datatype == 'muxnet-cifar10':
+                batch = deepcopy(batch)
+                batch['input'] = F.interpolate(batch['input'], size=224, mode='bicubic', align_corners=False)
+
             batch['input'] = batch['input'].to(device)
             batch['output'] = batch['output'].to(device)
             # Overfitting encapsulation #
