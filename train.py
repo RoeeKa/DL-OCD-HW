@@ -66,7 +66,7 @@ def train(args, config, optimizer, optimizer_scale,
 
             torch.cuda.empty_cache()
 
-            if (idx + 1) % 10000 == 0:
+            if (idx + 1) % 500 == 0:
                 print(f'Finished {idx + 1} batches')
 
         print('precomputation finished')
