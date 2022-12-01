@@ -186,6 +186,6 @@ for idx, batch in enumerate(test_loader):
     correct_items += predicted_labels.eq(batch['output']).sum().item()
     total_items += batch['output'].size(0)
 
-    print(f"\rBaseline loss {lbaseline/(idx+1)}, Overfitted loss {lopt/(idx+1)}, Diffusion loss {ldiff/(idx+1)}, batch {idx + 1}",end='')
+    print(f"\rBaseline loss {lbaseline/(idx+1)}, Overfitted loss {lopt/(idx+1)}, Diffusion loss {ldiff/(idx+1)}, batch {idx + 1}, acc: {correct_items / total_items}",end='')
 
 print(f'Test set acc: {correct_items / total_items}')
