@@ -145,6 +145,9 @@ else:
 ########################################### Test Phase ##########################################
 #################################################################################################
 
+total_items = 0
+correct_items = 0
+
 print('*'*100)
 ldiff,lopt,lbaseline = 0,0,0
 for idx, batch in enumerate(test_loader):
@@ -167,7 +170,7 @@ for idx, batch in enumerate(test_loader):
         encoding_out = outin
     with torch.no_grad():
         std = scale_model(hfirst,encoding_out)
-    ldiffusion, loptimal, lbase, wdiff = generalized_steps(
+    ldiffusion, loptimal, lbase, wdiff, predicted_labels = generalized_steps(
         named_parameter=weight_name, numstep=config.diffusion.diffusion_num_steps_eval,
         x=(diff_weight.unsqueeze(0),hfirst,encoding_out), model=diffusion_model,
         bmodel=model, batch=batch, loss_fn=opt_error_loss,
@@ -177,4 +180,10 @@ for idx, batch in enumerate(test_loader):
     ldiff += ldiffusion
     lopt += loptimal
     lbaseline += lbase
+
+    correct_items += predicted_labels.eq(batch['output']).sum().item()
+    total_items += batch['output'].size(0)
+
     print(f"\rBaseline loss {lbaseline/(idx+1)}, Overfitted loss {lopt/(idx+1)}, Diffusion loss {ldiff/(idx+1)}, batch {idx + 1}",end='')
+
+print(f'Test set acc: {correct_items / total_items}')
