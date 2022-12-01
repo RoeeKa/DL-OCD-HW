@@ -78,16 +78,17 @@ def train(args, config, optimizer, optimizer_scale,
         for idx, batch in enumerate(train_loader):
             optimizer_scale.zero_grad()
 
-            # Roee muxnet only
-            if args.datatype == 'muxnet-cifar10':
-                batch = deepcopy(batch)
-                batch['input'] = F.interpolate(batch['input'], size=224, mode='bicubic', align_corners=False)
-            batch['input'] = batch['input'].to(device)
-            batch['output'] = batch['output'].to(device)
             # Overfitting encapsulation #
             if args.precompute_all:
                 weight,hfirst,outin = ws[idx].to(device),hs[idx],outs[idx].to(device)
             else:
+                # Roee muxnet only
+                if args.datatype == 'muxnet-cifar10':
+                    batch = deepcopy(batch)
+                    batch['input'] = F.interpolate(batch['input'], size=224, mode='bicubic', align_corners=False)
+                batch['input'] = batch['input'].to(device)
+                batch['output'] = batch['output'].to(device)
+
                 weight,hfirst,outin= overfitting_batch_wrapper(
                 datatype=args.datatype,
                 bmodel=model,weight_name=weight_name,
