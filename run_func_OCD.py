@@ -171,7 +171,7 @@ for idx, batch in enumerate(test_loader):
         encoding_out = outin
     with torch.no_grad():
         std = scale_model(hfirst,encoding_out)
-    ldiffusion, loptimal, lbase, wdiff, predicted_labels = generalized_steps(
+    ldiffusion, loptimal, lbase, wdiff, predictions = generalized_steps(
         named_parameter=weight_name, numstep=config.diffusion.diffusion_num_steps_eval,
         x=(diff_weight.unsqueeze(0),hfirst,encoding_out), model=diffusion_model,
         bmodel=model, batch=batch, loss_fn=opt_error_loss,
@@ -182,10 +182,13 @@ for idx, batch in enumerate(test_loader):
     lopt += loptimal
     lbaseline += lbase
 
-    predicted_labels = torch.argmax(predicted_labels, 1)
-    correct_items += predicted_labels.eq(batch['output']).sum().item()
+    predictions = torch.argmax(predictions, 1)
+    correct_items += predictions.eq(batch['output']).sum().item()
     total_items += batch['output'].size(0)
 
+    del batch['input']
+    del batch['output']
+    torch.cuda.empty_cache()
     print(f"\rBaseline loss {lbaseline/(idx+1)}, Overfitted loss {lopt/(idx+1)}, Diffusion loss {ldiff/(idx+1)}, batch {idx + 1}, acc: {correct_items / total_items}",end='')
 
 print(f'Test set acc: {correct_items / total_items}')
